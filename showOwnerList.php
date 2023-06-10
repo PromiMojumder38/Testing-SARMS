@@ -118,4 +118,5 @@ $num = mysqli_num_rows($result);
         ?>
 
     </div>
-</body
+    </body>
+    </html>

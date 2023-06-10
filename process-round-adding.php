@@ -6,9 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="icon" href="images/logo.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="ownerstyle.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <title>মালিক নিবন্ধন ফর্ম</title>
+    <title>রাউন্ড ফর্ম</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
 
@@ -17,7 +16,7 @@
 }
 
 .wrapper {
-    background:#b4beb2;
+    background:#7d8a7a;
     padding: 0 20px 0 20px;
 }
 
@@ -37,7 +36,7 @@
 }
 
 .side-image {
-    background-image: url("images/2.jpg");
+    background-image: url("images/mainbg2.jpg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -125,10 +124,11 @@ img {
     border: none;
     outline: none;
     height: 45px;
-    background: #ececec;
+    background: #f0e7e7;
+    color: #f0e7e7;
     border-radius: 5px;
     transition: .4s;
-    background: rgba(110, 156, 37, 0.9);
+    background: rgba(54, 56, 51, 0.9);
     font-weight: 500;
    
 }
@@ -185,79 +185,75 @@ span a:hover {
         width: 100%;
     }
 }
-    </style>
+</style>
 </head>
 
 <body>
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-if (empty($_POST["owner_nid"])) {
-    die(" Owner Nid Required !!");
-}
-
-if (strlen($_POST["owner_nid"]) < 10) {
-    die("Wrong Owner Nid ( Less than 10 characters) !!");
-}
-
-if (empty($_POST["owner_name"])) {
-    die(" Owner Name Required !!");
-}
-
-if (empty($_POST["owner_date_of_birth"])) {
-    die(" Owner Date of Birth Required !!");
-}
-
-if (empty($_POST["owner_houseNo"])) {
-    die(" Owner House No Required !!");
-}
-if (empty($_POST["owner_postalCode"])) {
-    die(" Owner Postal Code Required !!");
-}
-
-if (empty($_POST["owner_address"])) {
-    die(" Owner Address Required !!");
-}
-
-$mysqli = require __DIR__ . "/database.php";
-
-$sql = "INSERT INTO owner (owner_nid, owner_name,  owner_date_of_birth,  owner_houseNo , owner_postalCode ,owner_address)
-        VALUES (?, ?, ? ,?, ?, ?)";
-
-$stmt = $mysqli->stmt_init();
-
-if (!$stmt->prepare($sql)) {
-    die("SQL error: " . $mysqli->error);
-}
-
-$stmt->bind_param(
-    "ssssss",
-    $_POST["owner_nid"],
-    $_POST["owner_name"],
-    $_POST["owner_date_of_birth"],
-    $_POST["owner_houseNo"],
-    $_POST["owner_postalCode"],
-    $_POST["owner_address"]
-);
-
-if ($stmt->execute()) {
-
-    header("Location: index.php");
-    exit;
-
-} else {
-
-    if ($mysqli->errno === 1062) {
-        die("Error: একই এনআইডিধারী ব্যক্তি একাধিকবার রেজিস্ট্রেশন করতে পারবে না।
-        ");
-    } else {
-        die($mysqli->error . " " . $mysqli->errno);
+    if (empty($_POST["manager_nid"])) {
+        die("Manager NID Required!");
     }
+
+    if (empty($_POST["round_number"])) {
+        die("Round Number Required!");
+    }
+
+    if (empty($_POST["round_start_time"])) {
+        die("Round Start Time Required!");
+    }
+
+    if (empty($_POST["round_end_time"])) {
+        die("Round End Time Required!");
+    }
+
+    if (empty($_POST["round_date"])) {
+        die("Round Date Required!");
+    }
+
+    if (empty($_POST["round_area"])) {
+        die("Round Area Required!");
+    }
+
+    // Database connection
+    $host = "localhost";
+    $dbname = "login_db";
+    $username = "root";
+    $password = "";
+    
+    $mysqli = new mysqli($host, $username, $password, $dbname);
+    
+    if ($mysqli->connect_errno) {
+        die("Connection error: " . $mysqli->connect_error);
+    }
+
+    $stmt = $mysqli->prepare("INSERT INTO round (round_number, round_date, round_start_time, round_end_time, round_area, manager_nid) VALUES (?, ?, ?, ?, ?, ?)");
+
+    if (!$stmt) {
+        die("Prepare failed: " . $mysqli->error);
+    }
+
+    $stmt->bind_param("ssssss", $_POST["round_number"], $_POST["round_date"], $_POST["round_start_time"], $_POST["round_end_time"], $_POST["round_area"], $_POST["manager_nid"]);
+
+    if ($stmt->execute()) {
+        header("Location: index.php");
+        exit;
+    } else {
+        if ($mysqli->errno === 1452) {
+            echo "ম্যানেজারের এনআইডি সঠিক নয়।";
+        } else if ($mysqli->errno === 1062) {
+            die("Error: রাউন্ড নং পুনরাবৃত্তি হয়েছে।");
+        } else {
+            die("Error: " . $mysqli->error);
+        }
+    }
+
+    $stmt->close();
+    $mysqli->close();
 }
 
-}
 ?>
-<div class="wrapper">
+    <div class="wrapper">
         <div class="container main">
             <div class="row">
                 <div class="col-md-6 side-image">
@@ -265,35 +261,36 @@ if ($stmt->execute()) {
                 </div>
                 <div class="col-md-6 right">
                     <div class="input-box">
-                        <header>মালিক নিবন্ধন ফর্ম</header>
+                        <header>রাউন্ড ফর্ম</header>
 
-                        <form action="process-owner-registration.php" method="post" id="owner_registration" novalidate>
-
-                            <div class="input-field">
-                                <input type="text" class="input" id="owner_nid" name = "owner_nid" required>
-                                <label>জাতীয় পরিচয়পত্র নম্বর</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="text" class="input" id="owner_name" name = "owner_name" required>
-                                <label for="owner_name">মালিকের নাম</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="text" class="input" id="owner_date_of_birth" name = "owner_date_of_birth" pattern="\d{4}-\d{2}-\d{2}" required>
-                                <label for="owner_date_of_birth">জন্ম তারিখ (YYYY-MM-DD)</label>
-                            </div>
-                            <div class="input-field">
-                                <input type="text" class="input" name = "owner_houseNo" id="owner_houseNo" required>
-                                <label for="owner_houseNo">বর্তমান ঠিকানা : বাড়ি নং</label>
-                            </div>
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="round_adding" novalidate>
 
                             <div class="input-field">
-                                <input type="text" class="input" id="owner_postalCode" name = "owner_postalCode" required>
-                                <label for="owner_postalCode">বর্তমান ঠিকানা : পোস্টাল কোড
+                                <input type="text" class="input" id="round_number" name = "round_number" required>
+                                <label>রাউন্ড নং</label> 
+                            </div>
+                            <div class="input-field">
+                                <input type="text" class="input" id="round_date" name="round_date" required>
+                                <label for="round_date">রাউন্ড তারিখ</label>
+                            </div>
+                            
+                            <div class="input-field">
+                                <input type="text" class="input" id="round_start_time" name = "round_start_time" required>
+                                <label for="round_start_time">রাউন্ড শুরুর সময় </label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" class="input" name = "round_end_time" id="round_end_time" required>
+                                <label for="round_end_time">রাউন্ড শেষের সময় </label>
+                            </div>
+
+                            <div class="input-field">
+                                <input type="text" class="input" id="round_area" name = "round_area" required>
+                                <label for="round_area">রাউন্ড স্থান 
                                 </label>
                             </div>
                             <div class="input-field">
-                                <input type="text" class="input" id="owner_address" name = "owner_address" required>
-                                <label for="owner_address">বর্তমান ঠিকানা :জেলা</label>
+                                <input type="text" class="input" id="manager_nid" name = "manager_nid" required>
+                                <label for="manager_nid">ম্যানেজারের এনআইডি নং</label>
                             </div>
                             <div class="input-field">
                                 <input type="submit" class="submit" value="নিবন্ধন">
@@ -303,7 +300,7 @@ if ($stmt->execute()) {
                         </form>
 
                         <div class="signin">
-                            <span>পূর্বে রেজিস্ট্রেশন করেছেন? <a href="#">এড়িয়ে যান</a></span>
+                            <span><a href="#">পূর্বের মেনুতে ফিরে যান</a></span>
                         </div>
                     </div>
                 </div>
@@ -311,5 +308,6 @@ if ($stmt->execute()) {
         </div>
     </div>
 </body>
+<script src="input.js"></script>
 
 </html>

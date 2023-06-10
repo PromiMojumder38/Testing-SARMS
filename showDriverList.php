@@ -84,7 +84,7 @@ $num = mysqli_num_rows($result);
             color: #888;
             margin-top: 20px;
         }
-        }
+        
     </style>
 </head>
 <body>

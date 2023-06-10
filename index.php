@@ -48,7 +48,7 @@ if (isset($_SESSION["user_id"])) {
 
             <?php if (isset($user)): ?>
 
-                <h3>Welcome <span class="name"">
+                <h3>Welcome <span class="name">
                 <?= htmlspecialchars($user["name"]) ?> ! </span>
                 </h3>
 
@@ -70,17 +70,17 @@ if (isset($_SESSION["user_id"])) {
                     <?php if (isset($user)): ?>
 
 
-                        <a href=" ownerReg.html">Owner Registration</a>
-                        <a href="autorickshawReg.html">Auto-Rickshaw Registration</a>
-                        <a href="driverReg.html">Driver Registration</a>
-                        <a href="managerReg.html">Manager Registration</a>
-                        <a href="authority.html">Authority Registration</a>
+                        <a href="process-owner-registration.php">Owner Registration</a>
+                        <a href="process-autorickshaw-registration.php">Auto-Rickshaw Registration</a>
+                        <a href="process-driver-registration.php">Driver Registration</a>
+                        <a href="process-manager-registration.php">Manager Registration</a>
+                        <a href="process-authority-registration.php">Authority Registration</a>
                         <a class="logout" href="logout.php">Log out</a>
 
                     <?php else: ?>
 
-                        <a href="signup.html">Log in</a>
-                        <a href="signup.html">sign up</a>
+                        <a href="process-signup.php">Log in</a>
+                        <a href="process-signup.php">sign up</a>
 
                     <?php endif; ?>
 
